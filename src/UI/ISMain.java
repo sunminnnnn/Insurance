@@ -54,6 +54,8 @@ public class ISMain {
             e.printStackTrace();
         }
     }
+    
+    /// 변경
 
     // 시나리오대로 작성해오면 돼
     private static void printMenu() {
