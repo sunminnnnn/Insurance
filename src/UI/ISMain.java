@@ -78,6 +78,8 @@ public class ISMain {
             e.printStackTrace();
         }
     }
+    
+    /// 변경
 
     private static void checkEmployee() {   // 직원의 유형(보험개발, 영업, 보상)별로 접속할 수 있는 메인 메뉴를 분리해주는 목적
         System.out.println("****************** CHECK EMPLOYEE *******************");
