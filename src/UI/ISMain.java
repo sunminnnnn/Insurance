@@ -5,17 +5,18 @@ import customer.CustomerList;
 import customer.CustomerListImpl;
 import employee.Employee;
 import employee.EmployeeListImpl;
-import insurance.Coverage;
-import insurance.Insurance;
-import insurance.InsuranceList;
-import insurance.InsuranceListImpl;
+import insurance.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class ISMain {
+    private static InsuranceList insuranceList;
 
     public ISMain() {
 
@@ -43,11 +44,11 @@ public class ISMain {
                                 break;
                             case 2:
                                 System.out.println("******* 보험상품을 인가하는 페이지입니다 *******");
-                                // approveInsurance();
+                                approveInsurance(objReader);
                                 break;
                             case 3:
                                 System.out.println("******* 보험상품을 사후관리하는 페이지입니다 ********");
-                                // manageInsurance();
+                                manageInsurance(objReader);
                                 break;
                             case 4:
                                 System.out.println("프로그램을 종료합니다.");
@@ -59,11 +60,9 @@ public class ISMain {
                         System.out.println("========== 보험 영업 및 계약 메뉴 ==========");
 
 
-
                         break;
                     case "3":   // 보험보상 파트
                         System.out.println("========== 보험 보상 메뉴 ==========");
-
 
 
                         break;
@@ -79,8 +78,8 @@ public class ISMain {
         }
     }
 
-    /// 변경
 
+    /// 변경
     private static void checkEmployee() {   // 직원의 유형(보험개발, 영업, 보상)별로 접속할 수 있는 메인 메뉴를 분리해주는 목적
         System.out.println("****************** CHECK EMPLOYEE *******************");
         System.out.println("접근하고자 하는 부서의 파트를 입력하세요.");
@@ -91,6 +90,7 @@ public class ISMain {
     }
 
     // 보험 설계 로직
+
     private static void designInsurance(BufferedReader objReader) throws IOException {
         InsuranceList insuranceList = new InsuranceListImpl();
         Insurance insurance = new Insurance();
@@ -168,6 +168,133 @@ public class ISMain {
 
         insuranceList.add(insurance);
         System.out.println("보험 설계가 완료되었습니다.");
+    }
+
+    private static void approveInsurance(BufferedReader objReader) throws IOException {
+        // 인가가 되지 않은 보험 목록 로딩 로딩하고 보여주는 로직 필요 (DAO)
+        // ~~~ ...
+        ArrayList<Insurance> insurances = insuranceList.getInsuranceList();
+        System.out.println("***** 보험 목록 *****");
+        for (Insurance insurance : insurances) {
+            System.out.println(insurance.getInsuranceID() + " " + insurance.getInsuranceName());
+        }
+
+        System.out.println("상품 인가를 진행할 보험 ID를 입력하세요.");
+        Insurance insurance = insuranceList.search(Integer.parseInt(objReader.readLine()));
+        while (insurance == null) {
+            System.out.println("존재하지 않는 보험ID를 입력하셨습니다. 다시 입력하세요.");
+            insurance = insuranceList.search(Integer.parseInt(objReader.readLine()));
+        }
+
+        System.out.println("===== 보험 정보 =====");
+        System.out.println("보험 ID : " + insurance.getInsuranceID());
+        System.out.println("보험명 : " + insurance.getInsuranceName());
+        System.out.println("보험유형 : " + insurance.getInsuranceType());
+        System.out.println("보험 기본 가입비 : " + insurance.getInsuranceCost());
+        System.out.println("보험내용 : " + insurance.getContents());
+        System.out.println("상 - 보장내용 : " + insurance.getM_hcoverage().getCoverageContent());
+        System.out.println("상 - 최대보장금액 : " + insurance.getM_hcoverage().getCoverageCost());
+        System.out.println("중 - 보장내용 : " + insurance.getM_mcoverage().getCoverageContent());
+        System.out.println("중 - 최대보장금액 : " + insurance.getM_mcoverage().getCoverageCost());
+        System.out.println("하 - 보장내용 : " + insurance.getM_lcoverage().getCoverageContent());
+        System.out.println("하 - 최대보장금액 : " + insurance.getM_lcoverage().getCoverageCost());
+
+        System.out.println("상품 인가를 승인하시려면 [1], 거절하시려면 [2]를 입력하세요");
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
+        Date time = new Date();
+        Approve approve = new Approve();
+
+        switch (Integer.parseInt(objReader.readLine())) {
+            case 1:
+                approve.setInsuranceID(insurance.getInsuranceID());
+                approve.setApproved(1);
+                approve.setPermissionDate(format.format(time));
+                System.out.println(format.format(time) + "시각에" + insurance.getInsuranceName() + "보험이 인가 승인되었습니다.");
+                insurance.setM_approve(approve);
+                insuranceList.delete(insurance.getInsuranceID());
+                // 승인 처리된 리스트 dao 저장 로직 필요
+                // ...
+                break;
+            case 2:
+                System.out.println("상품 인가를 거절하셨습니다.");
+                approve.setInsuranceID(insurance.getInsuranceID());
+                approve.setApproved(0);
+                approve.setPermissionDate(format.format(time));
+                System.out.println("거절 사유를 입력해주세요.");
+                approve.setPermissionRefuse(objReader.readLine());
+                System.out.println("보험의 문제점을 입력해주세요.");
+                approve.setInsuranceProblem(objReader.readLine());
+                System.out.println(format.format(time) + "에 " + insurance.getInsuranceName() + "보험 인가를 거부하셨습니다.");
+                insurance.setM_approve(approve);
+                insuranceList.delete(insurance.getInsuranceID());
+                // 거절 처리된 리스트 dao 저장 로직 필요
+                // ...
+                break;
+        }
+    }
+
+    private static void manageInsurance(BufferedReader objReader) throws IOException {
+        System.out.println("===== 보험 목록 =====");
+        ArrayList<Insurance> insurances = insuranceList.getInsuranceList();
+        for (Insurance insurance : insurances) {
+            System.out.println(insurance.getInsuranceID() + " " + insurance.getInsuranceName());
+        }
+
+        System.out.println("판매실적표를 작성할 보험의 ID를 입력하세요.");
+        Insurance insurance = insuranceList.search(Integer.parseInt(objReader.readLine()));
+        while (insurance == null) {
+            System.out.println("존재하지 않는 보험 ID를 입력하셨습니다. 다시 입력하세요.");
+            insurance = insuranceList.search(Integer.parseInt(objReader.readLine()));
+        }
+
+        System.out.println("----- 보험정보 -----");
+        System.out.println("보험 ID : " + insurance.getInsuranceID());
+        System.out.println("보험명 : " + insurance.getInsuranceName());
+        System.out.println("보험유형 : " + insurance.getInsuranceType());
+        System.out.println("보험 기본 가입비 : " + insurance.getInsuranceCost());
+        System.out.println("보험내용 : " + insurance.getContents());
+        System.out.println("상 - 보장내용 : " + insurance.getM_hcoverage().getCoverageContent());
+        System.out.println("상 - 최대보장금액 : " + insurance.getM_hcoverage().getCoverageCost());
+        System.out.println("중 - 보장내용 : " + insurance.getM_mcoverage().getCoverageContent());
+        System.out.println("중 - 최대보장금액 : " + insurance.getM_mcoverage().getCoverageCost());
+        System.out.println("하 - 보장내용 : " + insurance.getM_lcoverage().getCoverageContent());
+        System.out.println("하 - 최대보장금액 : " + insurance.getM_lcoverage().getCoverageCost());
+
+        System.out.println("판매 실적표 작성을 진행하시려면 [1], 취소하시려면 [2]를 입력하세요");
+
+        switch (Integer.parseInt(objReader.readLine())) {
+            case 1:
+                if (insurance.getM_SaleRecord().getInsuranceID() != 0) {
+                    System.out.println("이미 기록된 판매실적표가 있습니다.");
+                    System.out.println("--------- 판매실적표 ---------");
+                    System.out.println("목표 개수 : " + insurance.getM_SaleRecord().getGoalCnt());
+                    System.out.println("달성 개수 : " + insurance.getM_SaleRecord().getSaleCnt());
+                    System.out.println("달성율 : " + ((double) insurance.getM_SaleRecord().getSaleCnt()
+                            / (double) insurance.getM_SaleRecord().getGoalCnt()) * 100);
+                } else {
+                    SaleRecord saleRecord = new SaleRecord();
+                    System.out.println("해당 보험의 목표 개수를 입력하세요.");
+                    saleRecord.setGoalCnt(Integer.parseInt(objReader.readLine()));
+                    System.out.println("해당 보험의 판매 가수를 입력하세요.");
+                    saleRecord.setSaleCnt(Integer.parseInt(objReader.readLine()));
+                    System.out.println("입력한 판매실적표는 다음과 같습니다. 맞으면 [1], 틀리면 [2]를 입력하세요.");
+                    System.out.println("--------- 판매실적표 ---------");
+                    System.out.println("목표 개수 : " + saleRecord.getGoalCnt());
+                    System.out.println("달성 개수 : " + saleRecord.getSaleCnt());
+                    System.out.println("달성율 : " + ((double)saleRecord.getSaleCnt() / (double) saleRecord.getSaleCnt()) * 100);
+
+                    if (Integer.parseInt(objReader.readLine()) == 1) {
+                        saleRecord.setInsuranceID(insurance.getInsuranceID());
+                        insurance.setM_SaleRecord(saleRecord);
+                        System.out.println("판매실적표 작성이 완료되었습니다.");
+                    }
+                }
+                break;
+            case 2:
+                System.out.println("판매실적표 작성이 취소되었습니다.");
+                break;
+        }
     }
 
 
