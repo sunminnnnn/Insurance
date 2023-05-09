@@ -307,7 +307,6 @@ public class ISMain {
             }
         }
     }
-
     private static void reward(BufferedReader objReader) throws NumberFormatException, IOException {
         System.out.println("입금하시겠습니까? /n 1. 예 /n 2. 아니오");
         int select = Integer.parseInt(objReader.readLine());
