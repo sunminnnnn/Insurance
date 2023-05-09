@@ -1,6 +1,8 @@
 package customer;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public interface CustomerList {
 
@@ -15,5 +17,7 @@ public interface CustomerList {
     public boolean update(Customer customer, int customerID);
 
     public ArrayList<Customer> getCustomerList();
+
+	public List<Customer> getList();
 
 }

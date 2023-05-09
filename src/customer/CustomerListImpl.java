@@ -1,6 +1,7 @@
 package customer;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CustomerListImpl implements CustomerList {
     // attributes
@@ -61,4 +62,10 @@ public class CustomerListImpl implements CustomerList {
         }
         return false;
     }
+
+	@Override
+	public List<Customer> getList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

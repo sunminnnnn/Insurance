@@ -31,9 +31,13 @@ public class ContractListImpl implements ContractList {
         return null;
     }
 
-    public Contract searchByCustomer(int customerID) {
+    public ArrayList<Contract> searchByCustomer(int customerID) {
+        ArrayList<Contract> contracts=new ArrayList<Contract>();
         for (Contract contract : this.contractList) {
-            if (contract.getCustomer().getCustomerID() == customerID) return contract;
+            if (contract.getCustomer().getCustomerID() == customerID) {
+                contracts.add(contract);
+                return contracts;
+            }
         }
         return null;
     }

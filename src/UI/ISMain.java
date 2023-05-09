@@ -1,11 +1,22 @@
 package UI;
 
+import accident.Accident;
+import accident.AccidentList;
+import accident.AccidentListImpl;
+import contract.Contract;
+import contract.ContractList;
+import contract.ContractListImpl;
 import customer.Customer;
 import customer.CustomerList;
 import customer.CustomerListImpl;
-import employee.Employee;
-import employee.EmployeeListImpl;
+import exemption.Exemption;
+import exemption.ExemptionList;
+import exemption.ExemptionListImpl;
 import insurance.*;
+import pCustomer.PCustomer;
+import pCustomer.PCustomerList;
+import pCustomer.PCustomerListImpl;
+import reward.RewardInfo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,15 +25,23 @@ import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ISMain {
     private static InsuranceList insuranceList;
+    private static PCustomerList pCustomerList;
+    private static CustomerList customerList;
+    private static ContractList contractList;
 
     public ISMain() {
-
+        pCustomerList = new PCustomerListImpl();
+        customerList = new CustomerListImpl();
+        contractList = new ContractListImpl();
     }
 
     public static void main(String[] args) throws IOException {
+        ISMain main = new ISMain();//생성
         boolean flag = false;   // 프로그램 종료를 판단하는 flag 데이터.
         BufferedReader objReader = new BufferedReader(new InputStreamReader(System.in));
         try {
@@ -58,13 +77,56 @@ public class ISMain {
                         break;
                     case "2":   // 보험영업및계약 파트
                         System.out.println("========== 보험 영업 및 계약 메뉴 ==========");
+                        System.out.println("1. 보험료 관리하기");
 
+                        System.out.println("3. 잠재 고객 관리하기");
+                        System.out.println("4. 고객 관리하기");
+
+                        submenu = Integer.parseInt(objReader.readLine());
+                        switch (submenu) {
+                            case 1:
+                                manageInsurancepremium(objReader);
+                                break;
+                            case 3:
+                                ////테스트용 임시정보입력
+                                PCustomer pcustomer = new PCustomer();
+                                pcustomer.setPCustomerID(1);
+                                pcustomer.setDate("2023.05.08");
+                                pcustomer.setPhoneNumber("01058830056");
+                                pcustomer.setConsultContext("");
+                                pcustomer.setCustomerName("박승연");
+                                pCustomerList.add(pcustomer);
+                                ////
+                                consult(objReader);
+                                break;
+                            case 4:
+                                manageCustomer(objReader);
+                                break;
+                        }
 
                         break;
                     case "3":   // 보험보상 파트
                         System.out.println("========== 보험 보상 메뉴 ==========");
-
-
+                        System.out.println("1. 면/부책 판단하기");
+                        System.out.println("2. 손해사정");
+                        System.out.println("3. 보상 지급하기");
+                        System.out.println("4. 종료하기");
+                        int submenu3 = Integer.parseInt(objReader.readLine());
+                        switch (submenu3) {
+                            case 1:
+                                decideExemption(objReader);
+                                break;
+                            case 2:
+                                damageAssessment(objReader);
+                                break;
+                            case 3:
+                                reward(objReader);
+                                break;
+                            case 4:
+                                System.out.println("프로그램을 종료합니다.");
+                                flag = true;
+                                break;
+                        }
                         break;
                     case "x":
                         return;
@@ -78,8 +140,6 @@ public class ISMain {
         }
     }
 
-
-    /// 변경
     private static void checkEmployee() {   // 직원의 유형(보험개발, 영업, 보상)별로 접속할 수 있는 메인 메뉴를 분리해주는 목적
         System.out.println("****************** CHECK EMPLOYEE *******************");
         System.out.println("접근하고자 하는 부서의 파트를 입력하세요.");
@@ -90,7 +150,6 @@ public class ISMain {
     }
 
     // 보험 설계 로직
-
     private static void designInsurance(BufferedReader objReader) throws IOException {
         InsuranceList insuranceList = new InsuranceListImpl();
         Insurance insurance = new Insurance();
@@ -198,7 +257,6 @@ public class ISMain {
         System.out.println("중 - 최대보장금액 : " + insurance.getM_mcoverage().getCoverageCost());
         System.out.println("하 - 보장내용 : " + insurance.getM_lcoverage().getCoverageContent());
         System.out.println("하 - 최대보장금액 : " + insurance.getM_lcoverage().getCoverageCost());
-
         System.out.println("상품 인가를 승인하시려면 [1], 거절하시려면 [2]를 입력하세요");
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
@@ -260,7 +318,6 @@ public class ISMain {
         System.out.println("중 - 최대보장금액 : " + insurance.getM_mcoverage().getCoverageCost());
         System.out.println("하 - 보장내용 : " + insurance.getM_lcoverage().getCoverageContent());
         System.out.println("하 - 최대보장금액 : " + insurance.getM_lcoverage().getCoverageCost());
-
         System.out.println("판매 실적표 작성을 진행하시려면 [1], 취소하시려면 [2]를 입력하세요");
 
         switch (Integer.parseInt(objReader.readLine())) {
@@ -282,7 +339,7 @@ public class ISMain {
                     System.out.println("--------- 판매실적표 ---------");
                     System.out.println("목표 개수 : " + saleRecord.getGoalCnt());
                     System.out.println("달성 개수 : " + saleRecord.getSaleCnt());
-                    System.out.println("달성율 : " + ((double)saleRecord.getSaleCnt() / (double) saleRecord.getSaleCnt()) * 100);
+                    System.out.println("달성율 : " + ((double) saleRecord.getSaleCnt() / (double) saleRecord.getSaleCnt()) * 100);
 
                     if (Integer.parseInt(objReader.readLine()) == 1) {
                         saleRecord.setInsuranceID(insurance.getInsuranceID());
@@ -298,6 +355,430 @@ public class ISMain {
     }
 
 
+    // ================ 가의 수정 =====================================================
+    private static void manageInsurancepremium(BufferedReader objReader) throws IOException {
+        CustomerList customerList = new CustomerListImpl();
+        Customer customer = new Customer();
+        System.out.println("======= 고객 관리 페이지에 진입했습니다. =======");
+        System.out.println("고객 관리 유형 중 원하는 유형을 선택해주세요.");
+        System.out.println("1. 보험료 관리");
+        System.out.println("2. 보험료 미납 고객 관리하기");
+        String managepreium = objReader.readLine().trim();
+        switch (managepreium) {
+            case "1":
+                List<Customer> customers = customerList.getList();
+                System.out.println("고객명 / 가입 상품명 / 보험료 납부 여부");
+                for (int i = 0; i < customers.size(); i++) {
+                    Customer selectedcustomer = customers.get(i);
+                    //가입 상품명을 보험 ID로 할지 가입 상품명을 string으로 둘지
+                    //System.out.println((i+1) + ". " + customer.getCustomerID() + " " + customer.insuranceID() + " " + (customer.getManageArrears() ? "Y" : "N"));
+                    System.out.println((i + 1) + ". " + customer.getCustomerID() + " " + (customer.getManageArrears() ? "Y" : "N"));
+                }
+                System.out.println("보험료 납부일 공지할 고객을 선택해주세요");
+                String selectedCustomer = objReader.readLine().trim();
+                Customer selectedcustomer = customers.get(Integer.parseInt(selectedCustomer) - 1);
+                System.out.println("해당 고객에게 보험료 납부일 관련 문자 및 이메일을 전송하시겠습니까?");
+                System.out.println("1. 네   2. 아니오");
+                String notificationOption = objReader.readLine().trim();
+                if (notificationOption.equals("1")) {
+                    System.out.println("정상적으로 알림을 전송하였습니다.");
+                    System.out.println("1. 프로그램 종료   2. 보험료 미납 고객 관리 페이지로 이동");
+                    String selectedOption = objReader.readLine().trim();
+                    switch (selectedOption) {
+                        case "1":
+                            System.exit(0);
+                        case "2":
+                            manageArrearsCustomer(objReader);
+                            return;
+                    }
+                } else
+                    System.out.println("해당 고객의 보험료 관리가 정상적으로 취소되었습니다! 재진행을 원하신다면 처음부터 진행해주세요!");
+                manageInsurancepremium(objReader);
+
+            case "2":
+                manageArrearsCustomer(objReader);
+
+        }
+    }
+
+    //보험료 독촉
+    private static void manageArrearsCustomer(BufferedReader objReader) throws IOException {
+        System.out.println("======보험료 미납 고객 관리하기======");
+        System.out.println("고객명 / 보험료 납부 여부 / 미납 횟수 / 블랙리스트 여부");
+
+        // 고객 리스트에서 보험료 미납 고객만 뽑기
+        CustomerList customerList = new CustomerListImpl();
+        List<Customer> arrearsCustomers = customerList.getList().stream()
+                .filter(customer -> !customer.getManageArrears())
+                .collect(Collectors.toList());
+
+        // 필터링된 고객 리스트를 뽑기
+        for (int i = 0; i < arrearsCustomers.size(); i++) {
+            Customer customer = arrearsCustomers.get(i);
+            System.out.println((i + 1) + ". " + customer.getCustomerID() + " / " + customer.getManageArrears()
+                    + " / " + customer.getArrearsCount() + " / " + customer.isBlackList());
+        }
+
+        System.out.println("선택할 고객의 번호를 입력해주세요:");
+        int selectedCustomerIdx = Integer.parseInt(objReader.readLine().trim()) - 1;
+
+        // 선택된 고객의 보험료 미납 횟수가 3회 이상이라면 문자 전송
+        Customer selectedCustomer = arrearsCustomers.get(selectedCustomerIdx);
+        if (selectedCustomer.getArrearsCount() >= 3) {
+            System.out.println("보험료 미납 횟수가 3회 이상인 고객입니다.");
+            System.out.println("문자를 전송하시겠습니까?");
+            System.out.println("1. 네");
+            System.out.println("2. 아니오");
+
+            String selectedOption = objReader.readLine().trim();
+            switch (selectedOption) {
+                case "1":
+                    System.out.println("문자가 전송되었습니다!");
+                    System.out.println("상담 내용을 작성해주세요:");
+                    String counseling = objReader.readLine().trim();
+                    //selectedCustomer.addCounselingRecord(counseling);
+                    System.out.println("상담 내용이 저장되었습니다: " + counseling);
+                    break;
+                case "2":
+                    break;
+            }
+        }
+
+        System.out.println("블랙리스트에 등록하시겠습니까?");
+        System.out.println("1. 네");
+        System.out.println("2. 아니오");
+
+        String selectedOption = objReader.readLine().trim();
+        switch (selectedOption) {
+            case "1":
+                selectedCustomer.setBlackList(true);
+                System.out.println("블랙리스트에 등록되었습니다!");
+                break;
+            case "2":
+                System.out.println("해당 고객의 블랙리스트 등록이 정상적으로 취소되었습니다! 재진행을 원하신다면 처음부터 진행해주세요!");
+                manageInsurancepremium(objReader);
+                break;
+        }
+    }
+    // ================ 가의 수정 =====================================================
+
+
+    // ================ 승연 수정 =======================================================
+//잠재 고객 관리 로직
+    private static void consult(BufferedReader objReader) {
+//    	boolean consultFlag=true; //닫기를 할 때까지 프로세스 반복할 경우 추가
+//    	while(consultFlag) {
+        //잠재고객 선택
+        ArrayList<PCustomer> customers = pCustomerList.getCustomerList();
+        System.out.println("======= 잠재 고객 관리 =======");
+        System.out.println("관리할 잠재 고객의 ID를 선택하세요.");
+        for (PCustomer customer : customers) {
+            System.out.println(customer.getPCustomerID() + " " + customer.getCustomerName() + " " + customer.getPhoneNumber() + " " + customer.getDate());
+        }
+        int selectionPCustomer = 0;//상담을 진행할 고객 ID
+        int submenu = 0;//서브메뉴
+        try {
+            while (true) {//<상담을 진행한다> 버튼과 아이디 재입력
+                selectionPCustomer = Integer.parseInt(objReader.readLine());
+                System.out.println("1. 상담을 진행한다.");
+                System.out.println("2. 아이디를 바꾼다.");
+                submenu = Integer.parseInt(objReader.readLine());
+                if (submenu == 1) {
+                    break;
+                } else {
+                    System.out.println("상담할 고객 아이디 재입력을 진행합니다.");
+                }
+            }
+            //상담 진행
+            PCustomer pCustomer = pCustomerList.search(selectionPCustomer);
+            System.out.println(pCustomer.getCustomerName() + " " + pCustomer.getPhoneNumber() + " " + "현재 상담 진행중.");
+            System.out.println("1. 상담 종료");
+            System.out.println("2. 고객 부재");
+//        		System.out.println("3. 보험 가입"); 없어진 요소
+            submenu = Integer.parseInt(objReader.readLine());
+            switch (submenu) {
+                //상담 이력 저장, PCustomer->Customer로 바꿈
+                case 1:
+                    System.out.println("상담 이력을 저장합니다.");
+                    Customer customer = new Customer();
+                    customer.setCustomerID(pCustomer.getPCustomerID());
+                    customer.setCustomerName(pCustomer.getCustomerName());
+                    customer.setDate(pCustomer.getDate());
+                    customer.setPhoneNumber(pCustomer.getPhoneNumber());
+                    while (true) {//<저장하기> 버튼과 내용 재입력
+                        System.out.println("고객의 주민번호를 입력하세요.");
+                        customer.setCustomerNumber(objReader.readLine());
+                        System.out.println("고객의 성별을 입력하세요.");
+                        customer.setSex(objReader.readLine());
+                        System.out.println("고객의 직업을 입력하세요.");
+                        customer.setJob(objReader.readLine());
+                        System.out.println("상담 이력을 입력하세요.");
+                        customer.setConsultContext(objReader.readLine());
+                        System.out.println("저장하시겠습니까? 1-예 2-아니오");
+                        submenu = Integer.parseInt(objReader.readLine());
+                        if (submenu == 1) {
+                            ////테스트용 임시정보입력
+                            Insurance insurance = new Insurance();
+                            insurance.setInsuranceName("보험1");
+                            Contract contract = new Contract();
+                            contract.setCustomer(customer);
+                            contract.setInsurance(insurance);
+                            contractList.add(contract);
+                            ////
+                            customerList.add(customer);
+                            System.out.println("상담 내용을 정상적으로 저장하였습니다!");
+                            break;
+                        } else if (submenu == 2) {
+                            System.out.println("상담 내용 저장 재입력을 진행합니다.");
+                        }
+                    }
+                    break; //저장 확인까지 되어야(while) 종료
+                //고객 부재인 경우
+                case 2:
+                    System.out.println("고객이 부재중입니다.");
+                    System.out.println("작업중인 직원의 이름을 입력하세요.");
+                    String employeeName = objReader.readLine();
+                    System.out.println("안녕하세요. 신동아화재 직원 " + employeeName + "입니다. " +
+                            "고객님께 꼭 필요하실 보험 상품이 출시되어 안내차 연락 드립니다. 상담을 원하실 경우 1588-3333으로 연락 부탁드립니다.");
+                    System.out.println("알림을 전송하시겠습니까? 1-예 2-아니오");
+                    submenu = Integer.parseInt(objReader.readLine());
+                    if (submenu == 1) {
+                        System.out.println("알림이 성공적으로 전송되었습니다!");
+                        break;
+                    }
+                    // 아니오를 눌렀을 경우 처음으로 돌아가는 로직>이렇게 되면 닫기 할 때까지 프로세스를 반복하도록 해야함.
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//    	} //닫기를 할 때까지 프로세스 반복할 경우 추가
+        System.out.println("잠재 고객 관리가 완료되었습니다.");
+    }
+
+    //고객 관리 로직
+    private static void manageCustomer(BufferedReader objReader) {
+        boolean manageCustomerFlag = true;
+        while (manageCustomerFlag) {
+            try {
+                //고객 선택
+                ArrayList<Customer> customers = customerList.getCustomerList();
+                System.out.println("======= 고객 관리 =======");
+                //여기 관리를 그만두고 나가게 해야 할 거 같음!! 시나리오엔 없으나 추가 필요
+                System.out.println("관리할 고객의 이름을 선택하세요.");
+                //ID가 아니라 이름을 선택하도록 되어 있음.. 계약을 진행한 직원 정보는 없어도 되나?
+                //각 고객과 계약한 보험의 목록
+                for (Customer customer : customers) {
+                    ArrayList<Contract> contracts = contractList.searchByCustomer(customer.getCustomerID());
+                    System.out.println("---" + customer.getCustomerName());
+                    for (Contract contract : contracts) {
+                        System.out.println(contract.getInsurance().getInsuranceName() + " " + contract.getDate());
+                    }
+                }
+                //고객 선택(이름으로)
+                String customerName = objReader.readLine();
+                int customerIndex = 0;
+                for (Customer cus : customers) {
+                    if (cus.getCustomerName().equals(customerName)) {
+                        customerIndex = customers.indexOf(cus);
+                        break;
+                    }
+                }
+                Customer customer = customers.get(customerIndex);
+                //선택한 고객의 정보 표시
+                System.out.println(customer.getCustomerNumber() + " " + customer.getCustomerName() + " "
+                        + customer.getSex() + " " + customer.getJob() + " " + customer.getPhoneNumber() + " "
+                        + customer.geteMail() + " " + customer.getAddress() + " " + customer.getDate());
+                ArrayList<Contract> contracts = contractList.searchByCustomer(customer.getCustomerID());
+                for (Contract contract : contracts) {
+                    System.out.println(contract.getInsurance().getInsuranceName());
+                }
+                System.out.println("1-수정 2-나가기");
+                int submenu = Integer.parseInt(objReader.readLine());
+                switch (submenu) {
+                    case 1: //수정 로직
+                        while (true) {
+                            Customer customertemp = new Customer();
+                            System.out.println("수정 정보를 입력합니다.");
+                            System.out.println("고객의 이름을 입력하세요.");
+                            customertemp.setCustomerName(objReader.readLine());
+                            System.out.println("고객의 직업을 입력하세요.");
+                            customertemp.setJob(objReader.readLine());
+                            System.out.println("고객의 전화번호를 입력하세요.");
+                            customertemp.setPhoneNumber(objReader.readLine());
+                            System.out.println("고객의 이메일을 입력하세요.");
+                            customertemp.seteMail(objReader.readLine());
+                            System.out.println("고객의 주소를 입력하세요.");
+                            customertemp.setAddress(objReader.readLine());
+                            System.out.println("1-저장 2-취소");
+                            submenu = Integer.parseInt(objReader.readLine());
+                            if (submenu == 1) {
+                                System.out.println(customertemp.getCustomerName() + " " + customertemp.getJob() + " "
+                                        + customertemp.getPhoneNumber() + " " + customertemp.geteMail() + " "
+                                        + customertemp.getAddress());
+                                System.out.println("해당 정보가 맞습니까? 1-확인 2-취소");
+                                submenu = Integer.parseInt(objReader.readLine());
+                                if (submenu == 1) {
+                                    for (Accident accident : customer.getAccident()) {
+                                        customertemp.setAccident(accident);
+                                    }
+                                    customertemp.setConsultContext(customer.getConsultContext());
+                                    customertemp.setCustomerID(customer.getCustomerID());
+                                    customertemp.setDate(customer.getDate());
+                                    customertemp.setFileHref(customer.getFileHref());
+                                    customertemp.setM_building(customer.getM_building());
+                                    customertemp.setM_car(customer.getM_car());
+                                    customertemp.setM_driver(customer.getM_driver());
+                                    customertemp.setPCustomerID(customer.getPCustomerID());
+                                    customertemp.setSex(customer.getSex());
+                                    customers.set(customerIndex, customertemp);
+                                    System.out.println("저장이 완료되었습니다.");
+                                    break;
+                                } else if (submenu == 2) {
+                                    System.out.println("변경 사항이 저장되지 않습니다. 수정을 취소하시겠습니까?");
+                                    System.out.println("1-예 2-아니오");
+                                    submenu = Integer.parseInt(objReader.readLine());
+                                    if (submenu == 1) {
+                                        break;
+                                    } else if (submenu == 2) {
+                                        System.out.println("수정 정보 입력 화면으로 돌아갑니다.");
+                                    }
+                                }
+                            } else if (submenu == 2) {
+                                System.out.println("수정 정보 입력 화면으로 돌아갑니다.");
+                            }
+                        }
+                        break;
+                    case 2:
+                        System.out.println("관리할 고객 이름 선택 화면으로 돌아갑니다.");
+                        break;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    // ================ 승연 수정 =======================================================
+
+
+    // =============== 선민 수정 ===========================================================
+    private static void decideExemption(BufferedReader objReader) throws NumberFormatException, IOException {
+        AccidentList accidentList = new AccidentListImpl();
+        Accident accident = new Accident();
+
+        // 사고 목록 보기
+        System.out.println("======= 면/부책 판단하기를 시작하겠습니다. =======");
+        System.out.println("판단하고자 하는 사고를 선택해주세요.");
+        String list = "";
+        if (accident.getJudgementComplete() == 1) { // 면부책 여부가 x인 것들만
+            for (int i = 0; i < accidentList.getAccidentList().size(); i++) {
+                list += accidentList.getAccidentList().get(i) + "\n";
+            }
+        }
+        System.out.println(list);
+        int select = Integer.parseInt(objReader.readLine());
+
+        Accident selectedAccident = accidentList.search(select); // 하나의 사고만 보여줌
+        // 사고일자, 사고시각, 사고위치, 사고위험정보(고, 중, 저), 현장정보
+        System.out.println(selectedAccident.getAccidentDate() + " " + selectedAccident.getAccidentTime() + " "
+                + selectedAccident.getAccidentSize() + " " + selectedAccident.getM_siteInfo());
+
+        // 면/부책 정보(면/부책 여부, 판단 사유, 참고자료, 관련법규) 입력창
+        Exemption exemption = new Exemption();
+        ExemptionList exemptionList = new ExemptionListImpl();
+
+        System.out.println("면/부책 여부를 입력하세요.");
+        int judgementComplete = Integer.parseInt(objReader.readLine());
+        accident.setJudgementComplete(judgementComplete);
+
+        System.out.println("판단 사유를 입력하세요.");
+        String reason = objReader.readLine();
+        exemption.setReason(reason);
+
+        System.out.println("참고자료를 입력하세요.");
+        // exemption.setSubFile(objReader.readLine());
+        // --> 파일 입력은 어떻게 할 것인지
+
+        System.out.println("관련법규를 입력하세요.");
+        String legacy = objReader.readLine();
+        exemption.setLegacy(legacy);
+
+        if (reason == null || legacy == null) {
+            System.out.println("미입력정보가 존재합니다.");
+        }
+
+        // 고유번호 부여
+        exemption.setExemptionID(exemptionList.getExemptionList().size() + 1);
+        System.out.println("손해조사 심사가 완료되었습니다");
+    }
+
+    private static void damageAssessment(BufferedReader objReader) throws NumberFormatException, IOException {
+        AccidentList accidentList = new AccidentListImpl();
+        Accident accident = new Accident();
+        Exemption exemption = new Exemption();
+        ExemptionList exemptionList = new ExemptionListImpl();
+        RewardInfo rewardInfo = new RewardInfo();
+        while (true) {
+            // // 면부책 여부가 o인 사고 목록 보기
+            System.out.println("======= 손해사정을 시작하겠습니다. =======");
+            System.out.println("손해를 사정하고자 하는 사고를 선택해주세요.");
+            String list = "";
+            if (accident.getJudgementComplete() == 0) {
+                for (int i = 0; i < accidentList.getAccidentList().size(); i++) {
+                    list += accidentList.getAccidentList().get(i) + "\n";
+                }
+            }
+            System.out.println(list);
+
+            int select = Integer.parseInt(objReader.readLine());
+            Exemption selectedExemption = exemptionList.search(select); // 하나의 사고만 보여줌
+
+            // 면/부책 정보(면/부책 여부(?), 판단사유, 참고자료(?), 관련법규)
+            System.out.println(selectedExemption.getReason() + " " + selectedExemption.getLegacy());
+
+            // 손해사정정보(지급액, 판단사유) 입력창
+            System.out.println("지급액을 입력하세요.");
+            String payment = objReader.readLine();
+            if (payment == null) {
+                System.out.println("미입력정보가 존재합니다");
+                return;
+            }
+            rewardInfo.setPayment(payment);
+
+            System.out.println("판단 사유를 입력하세요.");
+            String assessReason = objReader.readLine();
+            if (assessReason == null) {
+                System.out.println("미입력정보가 존재합니다");
+                return;
+            }
+            rewardInfo.setAssessReason(assessReason);
+
+            System.out.println("손해사정을 완료하시겠습니까? /n 1. 예 /n 2. 아니오");
+            select = Integer.parseInt(objReader.readLine());
+            if (select == 1) {
+                // 손해사정내역 이메일 전송
+                break;
+            } else if (select == 2) {
+                System.out.println("손해사정을 취소하였습니다.");
+                continue;
+            }
+        }
+    }
+
+    private static void reward(BufferedReader objReader) throws NumberFormatException, IOException {
+        System.out.println("입금하시겠습니까? /n 1. 예 /n 2. 아니오");
+        int select = Integer.parseInt(objReader.readLine());
+        if (select == 1) {
+            // 보험 종류별로 출력문 다름
+        } else if (select == 2) {
+            System.out.println("보상금 지급을 취소하였습니다.");
+        }
+    }
+    // ==================== 선민 수정 ============================================================
+
+
+
+
+// 클라이언트 서버 프로그래밍 강의에서 가져와서 남은 코드들~~~~~~~~~~~~~~ =================================================
     // (JUST 참고용)수업시간 진행 내용 .... Usecase 내용 토대로 그대로 가져와
     private static void registerCustomer(BufferedReader objReader) throws IOException {
         CustomerList customerList = new CustomerListImpl();
@@ -311,7 +792,6 @@ public class ISMain {
         String customerJob = objReader.readLine().trim();
         customer.setCustomerNumber(customerJob);
     }
-
 
 //    private static void registrateCourse(ServerIF server, BufferedReader inputReader) throws IOException, LogFailException, NullDataException {
 //        System.out.println("****************** Resistration *******************");
@@ -386,6 +866,5 @@ public class ISMain {
 //        }
 //        System.out.println(list);
 //    }
-
 
 }
