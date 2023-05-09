@@ -11,7 +11,7 @@ public class Accident {
     private Customer customer;
 
     public Accident() {
-        setM_siteInfo(new SiteInfo());
+        setSiteInfo(new SiteInfo());
     }
 
     public Customer getCustomer() {
@@ -94,11 +94,11 @@ public class Accident {
         this.date = date;
     }
 
-    public SiteInfo getM_siteInfo() {
+    public SiteInfo getSiteInfo() {
         return m_siteInfo;
     }
 
-    public void setM_siteInfo(SiteInfo m_siteInfo) {
+    public void setSiteInfo(SiteInfo m_siteInfo) {
         this.m_siteInfo = m_siteInfo;
     }
 
@@ -109,5 +109,4 @@ public class Accident {
         if (this.getAccidentComplete() == 0) return "처리";
         else return "미처리";
     }
-
 }
