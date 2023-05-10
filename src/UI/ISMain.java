@@ -1,10 +1,5 @@
 package UI;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.rmi.RemoteException;
-
 import accident.Accident;
 import accident.AccidentList;
 import accident.AccidentListImpl;
@@ -19,6 +14,15 @@ import insurance.Insurance;
 import insurance.InsuranceList;
 import insurance.InsuranceListImpl;
 import reward.RewardInfo;
+
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.rmi.RemoteException;
+import java.util.Properties;
 
 public class ISMain {
 
@@ -307,7 +311,6 @@ public class ISMain {
             }
         }
     }
-
     private static void reward(BufferedReader objReader) throws NumberFormatException, IOException {
         System.out.println("입금하시겠습니까? /n 1. 예 /n 2. 아니오");
         int select = Integer.parseInt(objReader.readLine());
@@ -318,4 +321,40 @@ public class ISMain {
         }
     }
 
+    public class MailSender {
+        Session session;
+
+        public MailSender() {
+            Properties props = new Properties();
+            props.put("mail.smtp.host", "smtp.gmail.com");
+            props.put("mail.smtp.port", "587");
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+
+            this.session = Session.getInstance(props, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication("ribbon0508@gmail.com", "pjhyqsmzsjvcydrg");
+                }
+            });
+        }
+
+        public void sendEmailToFindId(String email) throws MessagingException {
+            String receiver = "sslspplz@naver.com";
+            String title = "test - title";
+            String content = "test - contents";
+            Message message = new MimeMessage(session);
+            try {
+                message.setFrom(new InternetAddress("ribbon0508@gmail.com", "신동아화재보험사", "utf-8"));
+                message.addRecipient(Message.RecipientType.TO, new InternetAddress(receiver));
+                message.setSubject(title);
+                message.setContent(content, "text/html; charset=utf-8");
+
+                Transport.send(message);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
