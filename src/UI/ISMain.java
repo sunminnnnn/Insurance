@@ -50,7 +50,7 @@ public class ISMain {
                 String sChoice = objReader.readLine().trim();
                 switch (sChoice) {
                     case "1":   // 보험개발
-                        System.out.println("========== 보험 개발 메뉴 ==========");
+                        System.out.println("============ 보험 개발 메뉴 ============");
                         System.out.println("1. 보험 설계하기");
                         System.out.println("2. 상품 인가하기");
                         System.out.println("3. 사후 관리하기");
@@ -59,6 +59,7 @@ public class ISMain {
                         int submenu = Integer.parseInt(objReader.readLine());
                         switch (submenu) {
                             case 1:
+                                System.out.println("******* 보험상품을 설계하는 페이지입니다 *******");
                                 designInsurance(objReader);
                                 break;
                             case 2:
@@ -76,7 +77,7 @@ public class ISMain {
                         }
                         break;
                     case "2":   // 보험영업및계약 파트
-                        System.out.println("========== 보험 영업 및 계약 메뉴 ==========");
+                        System.out.println("============ 보험 영업 및 계약 메뉴 ============");
                         System.out.println("1. 보험료 관리하기");
 
                         System.out.println("3. 잠재 고객 관리하기");
@@ -103,7 +104,6 @@ public class ISMain {
                                 manageCustomer(objReader);
                                 break;
                         }
-
                         break;
                     case "3":   // 보험보상 파트
                         System.out.println("========== 보험 보상 메뉴 ==========");
@@ -144,7 +144,7 @@ public class ISMain {
         System.out.println("****************** CHECK EMPLOYEE *******************");
         System.out.println("접근하고자 하는 부서의 파트를 입력하세요.");
         System.out.println("1. 보험 개발 파트");
-        System.out.println("2. 보험 영업 파트");
+        System.out.println("2. 보험 영업 및 계약 파트");
         System.out.println("3. 보험 보상 파트");
         System.out.println("x. EXIT");
     }
@@ -153,7 +153,7 @@ public class ISMain {
     private static void designInsurance(BufferedReader objReader) throws IOException {
         InsuranceList insuranceList = new InsuranceListImpl();
         Insurance insurance = new Insurance();
-        System.out.println("======= 보험 설계를 시작하겠습니다. =======");
+        System.out.println("============= 보험 설계를 시작하겠습니다 =============");
         System.out.println("설계하고자 하는 보험의 유형을 선택해주세요.");
         System.out.println("1. 자동차 보험");
         System.out.println("2. 운전자 보험");
@@ -170,7 +170,6 @@ public class ISMain {
                 insurance.setInsuranceType("building");
                 break;
         }
-
         System.out.println("보험명을 입력하세요.");
         insurance.setInsuranceName(objReader.readLine());
         System.out.println("보험 설명을 입력하세요.");
@@ -245,7 +244,7 @@ public class ISMain {
             insurance = insuranceList.search(Integer.parseInt(objReader.readLine()));
         }
 
-        System.out.println("===== 보험 정보 =====");
+        System.out.println("========== 보험 정보 ==========");
         System.out.println("보험 ID : " + insurance.getInsuranceID());
         System.out.println("보험명 : " + insurance.getInsuranceName());
         System.out.println("보험유형 : " + insurance.getInsuranceType());
@@ -293,7 +292,7 @@ public class ISMain {
     }
 
     private static void manageInsurance(BufferedReader objReader) throws IOException {
-        System.out.println("===== 보험 목록 =====");
+        System.out.println("========== 보험 목록 ==========");
         ArrayList<Insurance> insurances = insuranceList.getInsuranceList();
         for (Insurance insurance : insurances) {
             System.out.println(insurance.getInsuranceID() + " " + insurance.getInsuranceName());
@@ -306,7 +305,7 @@ public class ISMain {
             insurance = insuranceList.search(Integer.parseInt(objReader.readLine()));
         }
 
-        System.out.println("----- 보험정보 -----");
+        System.out.println("========== 보험정보 ==========");
         System.out.println("보험 ID : " + insurance.getInsuranceID());
         System.out.println("보험명 : " + insurance.getInsuranceName());
         System.out.println("보험유형 : " + insurance.getInsuranceType());
@@ -324,7 +323,7 @@ public class ISMain {
             case 1:
                 if (insurance.getM_SaleRecord().getInsuranceID() != 0) {
                     System.out.println("이미 기록된 판매실적표가 있습니다.");
-                    System.out.println("--------- 판매실적표 ---------");
+                    System.out.println("---------- 판매실적표 ----------");
                     System.out.println("목표 개수 : " + insurance.getM_SaleRecord().getGoalCnt());
                     System.out.println("달성 개수 : " + insurance.getM_SaleRecord().getSaleCnt());
                     System.out.println("달성율 : " + ((double) insurance.getM_SaleRecord().getSaleCnt()
@@ -336,11 +335,10 @@ public class ISMain {
                     System.out.println("해당 보험의 판매 가수를 입력하세요.");
                     saleRecord.setSaleCnt(Integer.parseInt(objReader.readLine()));
                     System.out.println("입력한 판매실적표는 다음과 같습니다. 맞으면 [1], 틀리면 [2]를 입력하세요.");
-                    System.out.println("--------- 판매실적표 ---------");
+                    System.out.println("---------- 판매실적표 ----------");
                     System.out.println("목표 개수 : " + saleRecord.getGoalCnt());
                     System.out.println("달성 개수 : " + saleRecord.getSaleCnt());
-                    System.out.println("달성율 : " + ((double) saleRecord.getSaleCnt() / (double) saleRecord.getSaleCnt()) * 100);
-
+                    System.out.println("달성율 : " + ((double) saleRecord.getSaleCnt() / (double) saleRecord.getGoalCnt()) * 100);
                     if (Integer.parseInt(objReader.readLine()) == 1) {
                         saleRecord.setInsuranceID(insurance.getInsuranceID());
                         insurance.setM_SaleRecord(saleRecord);
@@ -776,9 +774,7 @@ public class ISMain {
     // ==================== 선민 수정 ============================================================
 
 
-
-
-// 클라이언트 서버 프로그래밍 강의에서 가져와서 남은 코드들~~~~~~~~~~~~~~ =================================================
+    // 클라이언트 서버 프로그래밍 강의에서 가져와서 남은 코드들~~~~~~~~~~~~~~ =================================================
     // (JUST 참고용)수업시간 진행 내용 .... Usecase 내용 토대로 그대로 가져와
     private static void registerCustomer(BufferedReader objReader) throws IOException {
         CustomerList customerList = new CustomerListImpl();
