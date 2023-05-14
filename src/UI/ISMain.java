@@ -413,7 +413,6 @@ public class ISMain {
         }
     }
 
-
     //보험료 독촉
     private static void manageArrears(BufferedReader objReader) throws IOException {
         System.out.println("======보험료 미납 고객 관리하기======");
@@ -461,11 +460,7 @@ public class ISMain {
                                 System.out.println("1. 닫기");
                                 String selectedOption1 = objReader.readLine().trim();
                                 break;
-                            }
-                    }
-                }
-            }
-        }
+                            }}}}}
 
     // ================ 가의 수정 =====================================================
 
