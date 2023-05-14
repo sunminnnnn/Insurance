@@ -7,8 +7,18 @@ import java.util.ArrayList;
 
 public class Customer extends PCustomer {
 
-    private int customerID;
-    private String address, customerNumber, eMail, job, sex, fileHref;
+    private int customerID,ArrearsCount;
+    private String address, customerNumber, eMail, job, sex, fileHref, age;
+    private boolean manageArrears, blackList;
+
+
+    public ArrayList<Accident> getAccidents() {
+        return accidents;
+    }
+
+    public void setAccidents(ArrayList<Accident> accidents) {
+        this.accidents = accidents;
+    }
     private ArrayList<Accident> accidents;
     // composition
     private Building m_building;
@@ -101,4 +111,40 @@ public class Customer extends PCustomer {
     public void setAccident(Accident accident) {
         this.accidents.add(accident);
     }
+
+    //보험료 납부 여부
+    public boolean getManageArrears() {
+        return getManageArrears();
+    }
+    public void setManageArrears(boolean arrears) {
+        this.manageArrears = arrears;
+    }
+
+    //블랙리스트
+    public boolean isBlackList() {
+        return blackList;
+    }
+
+    public void setBlackList(boolean blackList) {
+        this.blackList = blackList;
+    }
+
+    //보험료 미납횟수
+    public int getArrearsCount() {
+        return 0;
+    }
+
+    public void setArrearsCount(int arrearsCount) {
+        ArrearsCount = arrearsCount;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+
 }

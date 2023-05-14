@@ -28,10 +28,9 @@ public class ExemptionListImpl implements ExemptionList {
     }
 
     @Override
-    public Exemption search(int accidentNum) {
+    public Exemption search(int exemptionNum) {
         for (Exemption exemption : this.exemptionList) {
-            System.out.println(exemption.getAccidentID());
-            if (exemption.getAccidentID() == accidentNum) return exemption;
+            if (exemption.getAccidentID() == exemptionNum) return exemption;
         }
         return null;
     }

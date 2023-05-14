@@ -1,5 +1,7 @@
 package insurance;
 
+import contract.Contract;
+
 public class Insurance {
     // Attributes
     private String insuranceName, Contents, insuranceType, insuranceCost;
@@ -12,6 +14,9 @@ public class Insurance {
     public Coverage m_lcoverage;
     public Approve m_approve;
     public SaleRecord m_saleRecord;
+    public Contract contract;
+
+
 
     public Insurance() {
         // composition
@@ -97,5 +102,13 @@ public class Insurance {
     }
     public void setM_SaleRecord(SaleRecord m_saleRecord) {
         this.m_saleRecord = m_saleRecord;
+    }
+
+    public Contract getContract() {
+        return contract;
+    }
+
+    public void setContract(Contract contract) {
+        this.contract = contract;
     }
 }

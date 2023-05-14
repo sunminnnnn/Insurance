@@ -1,6 +1,7 @@
 package contract;
 
 import customer.Customer;
+import employee.Employee;
 import insurance.Insurance;
 
 import java.util.Calendar;
@@ -12,6 +13,8 @@ public class Contract {
     private Insurance insurance;
     private String date, endDate;
     private float insuranceRatio;
+    private Employee employee;
+    private ContractList contractList;
 
     public int getContractID() {
         return contractID;
@@ -31,6 +34,18 @@ public class Contract {
         return insurance;
     }
 
+    public Employee getEmployee() {
+        return employee;
+    }
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
+    public ContractList getContractList() {
+        return contractList;
+    }
+    public void setContractList(ContractList contractList) {
+        this.contractList = contractList;
+    }
     public void setInsurance(Insurance insurance) { this.insurance = insurance; }
 
     public String getDate() { return date; }

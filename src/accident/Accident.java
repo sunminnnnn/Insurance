@@ -3,15 +3,20 @@ package accident;
 import customer.Customer;
 
 public class Accident {
+    public enum EAccidnetSize {
+        EHigh, EMiddle, ELow;
+    }
+
     //attribute
-    private String accidentDate, date, accidentPlace, accidentTime, accidentSize, accidentType;
+    private String accidentDate, date, accidentPlace, accidentTime, accidentType, accidentName;
     private int accidentID, accidentComplete, judgementComplete;
     //composition Class
     private SiteInfo m_siteInfo;
+    private EAccidnetSize accidentSize;
     private Customer customer;
 
     public Accident() {
-        setSiteInfo(new SiteInfo());
+        setM_siteInfo(new SiteInfo());
     }
 
     public Customer getCustomer() {
@@ -70,11 +75,11 @@ public class Accident {
         this.accidentType = accidentType;
     }
 
-    public String getAccidentSize() {
+    public EAccidnetSize getAccidentSize() {
         return accidentSize;
     }
 
-    public void setAccidentSize(String accidentSize) {
+    public void setAccidentSize(EAccidnetSize accidentSize) {
         this.accidentSize = accidentSize;
     }
 
@@ -94,19 +99,28 @@ public class Accident {
         this.date = date;
     }
 
-    public SiteInfo getSiteInfo() {
+    public SiteInfo getM_siteInfo() {
         return m_siteInfo;
     }
 
-    public void setSiteInfo(SiteInfo m_siteInfo) {
+    public void setM_siteInfo(SiteInfo m_siteInfo) {
         this.m_siteInfo = m_siteInfo;
     }
 
     public void finalize() throws Throwable {
     }
 
+    public String getAccidentName() {
+        return accidentName;
+    }
+
+    public void setAccidentName(String accidentName) {
+        this.accidentName = accidentName;
+    }
+
     public String getCompleteText() {
-        if (this.getAccidentComplete() == 0) return "처리";
+        if (this.getAccidentComplete() == 1) return "처리";
         else return "미처리";
     }
+
 }

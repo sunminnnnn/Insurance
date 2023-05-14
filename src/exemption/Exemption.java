@@ -3,8 +3,8 @@ package exemption;
 import accident.Accident;
 
 public class Exemption extends Accident {
-    private int exemptionID, subFile, customerID;
-    private String reason, legacy;
+    private int exemptionID, customerID;
+    private String subFile, reason, legacy;
 
     public int getExemptionID() {
         return exemptionID;
@@ -20,10 +20,10 @@ public class Exemption extends Accident {
         this.reason = reason;
     }
 
-    public int getSubFile() {
+    public String getSubFile() {
         return subFile;
     }
-    public void setSubFile(int subFile) {
+    public void setSubFile(String subFile) {
         this.subFile = subFile;
     }
 
