@@ -368,11 +368,99 @@ public class ISMain {
     private static void manageInsurancepremium(BufferedReader objReader) throws IOException{
     	CustomerList customerList = new CustomerListImpl();
     	Customer customer = new Customer();
-   
+        System.out.println("======= 고객 관리 페이지에 진입했습니다. =======");
+        System.out.println("고객 관리 유형 중 원하는 유형을 선택해주세요.");
+        System.out.println("1. 보험료 관리");
+        System.out.println("2. 보험료 미납 고객 관리하기");
+        String managepreium = objReader.readLine().trim();
+        switch (managepreium) {
+            case "1":
+                System.out.println("1. 한요한 자동차 보험 N");
+                System.out.println("2. 김승민 운전자 보험 N");
+                System.out.println("보험료 납부일 공지할 고객을 선택해주세요");
+                String selectedCustomer = objReader.readLine().trim();
+                switch (selectedCustomer) {
+                    case "1":
+                        System.out.println("해당 고객에게 보험료 납부일 관련 문자 및 이메일을 전송하시겠습니까?");
+                        System.out.println("1. 네"); 
+                        System.out.println("2. 아니오");
+                        String choice = objReader.readLine().trim();
+                        if (choice.equals("1")) {
+                            // 이메일 전송 코드 추가
+                            System.out.println("정상적으로 알림을 전송하였습니다.");
+                        } else {
+                        	System.out.println("해당 고객의 보험료 관리가 정상적으로 취소되었습니다! 재진행을 원하신다면 처음부터 진행해주세요!");
+                            break ; // 첫번째 switch문으로 돌아감
+                        }
+                        System.out.println("1. 닫기      2. 보험료 미납 고객 관리하기");
+                        String manageArrearsChoice = objReader.readLine().trim();
+                        switch (manageArrearsChoice) {
+                            case "1":
+                                return;
+                            case "2":
+                            	manageArrears(objReader);
+                                break;
+                            default:
+                        }
+                        break;
+                    case "2":
+                        // 해당 고객에게 보험료 납부일 공지하는 코드 추가
+                        break;
+                }
+                break;
+            case "2":
+            	manageArrears(objReader);
+        }
     }
 
     //보험료 독촉
     private static void manageArrears(BufferedReader objReader) throws IOException {
+    	   System.out.println("======보험료 미납 고객 관리하기======");
+           System.out.println("고객명 / 보험료 납부 여부 / 미납 횟수 / 블랙리스트 여부");
+           System.out.println("1. 한요한 / N / 2회 / N");
+
+           String selectedCustomer = objReader.readLine().trim();
+           switch(selectedCustomer) {
+               case "1":
+                   System.out.println("한요한 고객의 보험료 미납 기간: 1개월");
+                   System.out.println("한요한 고객의 가입 상품명: 자동차 보험");
+                   System.out.println("미납관련 알림을 전송하시겠습니까?");
+                   System.out.println("1. 문자 전송하기");
+                   System.out.println("2. 더보기");
+
+                   String notificationOption = objReader.readLine().trim();
+                   if(notificationOption.equals("1")) {
+                       System.out.println("문자가 전송되었습니다!");
+                       System.out.println("회원의 이름: 한요한");
+                       System.out.println("상담 내용을 작성해주세요:");
+                       String counseling = objReader.readLine().trim();
+                       System.out.println("상담 내용이 정상적으로 저장되었습니다: " + counseling);
+                       System.out.println("1. 닫기");
+
+                       String selectedOption = objReader.readLine().trim();
+                       switch(selectedOption) {
+                           case "1":
+                               System.exit(0);
+                       }
+                   } else {
+                       System.out.println("1. 이메일 전송");
+
+                       String selectedOption = objReader.readLine().trim();
+                       switch(selectedOption) {
+                           case "1":
+                               System.out.println("고객에게 이메일을 발송하시겠습니까?");
+                               System.out.println("1. 네  2. 아니오");
+                               String choice = objReader.readLine().trim();
+                               if(choice.equals("1")) {
+                               	System.out.println("이메일 발송이 정상적으로 처리되었습니다!");
+                               	System.out.println("회원의 이름: 한요한");
+                                   System.out.println("상담 내용을 작성해주세요:");
+                                   String counseling = objReader.readLine().trim();
+                                   System.out.println("상담 내용이 정상적으로 저장되었습니다: " + counseling);
+                                   System.out.println("1. 닫기");
+                                   String selectedOption1 = objReader.readLine().trim();
+                                   break;
+                               }}}}
      }
 
     // ================ 가의 수정 =====================================================
